@@ -16,4 +16,4 @@ jobs:
     - name: Test
       run: dotnet test CoreProcessFilesTests/
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release CoreProcessFiles/
