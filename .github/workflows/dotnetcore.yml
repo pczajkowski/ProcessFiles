@@ -16,4 +16,4 @@ jobs:
     - name: Test
       run: dotnet test ProcessFilesTests/
     - name: Build
-      run: dotnet build --configuration Release ProcessFiles/
+      run: dotnet build --configuration Release --framework netcoreapp3.0 ProcessFiles/
