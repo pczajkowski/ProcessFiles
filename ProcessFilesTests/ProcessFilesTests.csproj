@@ -31,4 +31,9 @@
     <ProjectReference Include="..\ProcessFiles\ProcessFiles.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="testFiles\subFolder\test3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

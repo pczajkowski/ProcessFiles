@@ -28,6 +28,20 @@ namespace ProcessFilesTests
             Assert.Equal(exptectedInFolder, result);
         }
 
+        private bool CheckResult(List<string> result, List<string> expected)
+        {
+            if (!result.Count.Equals(expected.Count))
+                return false;
+
+            foreach (var item in result)
+            {
+                if (!expected.Contains(item))
+                    return false;
+            }
+
+            return true;
+        }
+
         [Fact]
         public void ProcessFolderRecursiveTest()
         {
@@ -45,19 +59,27 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles" }, "txt", Callback, true);
             Assert.Empty(errors);
+            Assert.True(CheckResult(result, expected));
+        }
 
-            bool CheckResult()
+        [Fact]
+        public void ProcessFolderAndFileTest()
+        {
+            var expected = new List<string>
             {
-                foreach (var item in result)
-                {
-                    if (!expected.Contains(item))
-                        return false;
-                }
+                exptectedInFolder
+            };
+            expected.AddRange(expectedInSubFolder);
 
-                return true;
+            var result = new List<string>();
+            void Callback(string value)
+            {
+                result.Add(Path.GetFileName(value));
             }
 
-            Assert.True(CheckResult());
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", "./testFiles/test1.txt" }, "txt", Callback);
+            Assert.Empty(errors);
+            Assert.True(CheckResult(result, expected));
         }
 
         [Fact]
