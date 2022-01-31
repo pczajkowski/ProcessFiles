@@ -1,37 +1,41 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace ProcessFilesTests
 {
     public class ProcessFilesTests
     {
+        private List<string> expectedInSubFolder = new List<string>
+        {
+            "test2.txt",
+            "test3.txt"
+        };
+
+        private string exptectedInFolder = "test1.txt";
+
         [Fact]
         public void ProcessFolderTest()
         {
-            const string expected = "test1.txt";
             var result = string.Empty;
-
             void Callback(string value)
             {
-               result = Path.GetFileName(value);
+                result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new [] {"./testFiles"}, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles" }, "txt", Callback);
             Assert.Empty(errors);
-
-            Assert.Equal(expected, result);
+            Assert.Equal(exptectedInFolder, result);
         }
 
         [Fact]
         public void ProcessFolderRecursiveTest()
         {
-            var expected = new[]
+            var expected = new List<string>
             {
-                "test1.txt",
-                "test2.txt"
+                exptectedInFolder
             };
+            expected.AddRange(expectedInSubFolder);
 
             var result = new List<string>();
             void Callback(string value)
@@ -59,26 +63,21 @@ namespace ProcessFilesTests
         [Fact]
         public void ProcessFileTest()
         {
-            var expected = @"./testFiles/test1.txt";
             var result = string.Empty;
-
             void Callback(string value)
             {
-                result = value;
+                result = Path.GetFileName(value);
             }
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test1.txt" }, "txt", Callback);
             Assert.Empty(errors);
-
-            Assert.Equal(expected, result);
+            Assert.Equal(exptectedInFolder, result);
         }
 
         [Fact]
         public void ProcessFileNotExistTest()
         {
-            var expected = @"./testFiles/test1.txt";
             var result = string.Empty;
-
             void Callback(string value)
             {
                 result = value;
@@ -86,16 +85,13 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test.txt" }, "txt", Callback);
             Assert.NotEmpty(errors);
-
-            Assert.NotEqual(expected, result);
+            Assert.NotEqual(exptectedInFolder, result);
         }
 
         [Fact]
         public void ProcessFileNotMatchExtensionTest()
         {
-            var expected = @"./testFiles/test1.txt";
             var result = string.Empty;
-
             void Callback(string value)
             {
                 result = value;
@@ -103,8 +99,7 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test1.txt" }, "abc", Callback);
             Assert.NotEmpty(errors);
-
-            Assert.NotEqual(expected, result);
+            Assert.Empty(result);
         }
     }
 }
