@@ -15,28 +15,6 @@ namespace ProcessFiles
     public static class ProcessFiles
     {
         private static List<string> _errors;
-        private static void ProcessDir(string path, string fileExtension, Action<string> callback, bool recursive = false)
-        {
-            if (!Directory.Exists(path))
-            {
-                _errors.Add($"{path} doesn't exist!");
-                return;
-            }
-
-            var searchOption = SearchOption.TopDirectoryOnly;
-            if (recursive)
-                searchOption = SearchOption.AllDirectories;
-
-            var files = Directory.GetFiles(path, $"*.{fileExtension}", searchOption);
-            if (!files.Any())
-            {
-                _errors.Add($"There are no {fileExtension} files in {path}!");
-                return;
-            }
-
-            foreach (var file in files)
-                callback(file);
-        }
 
         private static Result WhatIsIt(string argument)
         {
@@ -85,6 +63,29 @@ namespace ProcessFiles
                 return;
 
             callback(path);
+        }
+
+        private static void ProcessDir(string path, string fileExtension, Action<string> callback, bool recursive = false)
+        {
+            if (!Directory.Exists(path))
+            {
+                _errors.Add($"{path} doesn't exist!");
+                return;
+            }
+
+            var searchOption = SearchOption.TopDirectoryOnly;
+            if (recursive)
+                searchOption = SearchOption.AllDirectories;
+
+            var files = Directory.GetFiles(path, $"*.{fileExtension}", searchOption);
+            if (!files.Any())
+            {
+                _errors.Add($"There are no {fileExtension} files in {path}!");
+                return;
+            }
+
+            foreach (var file in files)
+                ProcessFile(file, fileExtension, callback);
         }
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> callback, bool recursive = false)
