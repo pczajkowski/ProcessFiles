@@ -5,11 +5,24 @@ using System.Linq;
 
 namespace ProcessFiles
 {
+    public enum Result
+    {
+        File,
+        Directory,
+        Failure
+    }
+
     public static class ProcessFiles
     {
         private static List<string> _errors;
         private static void ProcessDir(string path, string fileExtension, Action<string> callback, bool recursive = false)
         {
+            if (!Directory.Exists(path))
+            {
+                _errors.Add($"{path} doesn't exist!");
+                return;
+            }
+
             var searchOption = SearchOption.TopDirectoryOnly;
             if (recursive)
                 searchOption = SearchOption.AllDirectories;
@@ -25,10 +38,30 @@ namespace ProcessFiles
                 callback(file);
         }
 
-        private static bool CheckForFile(string argument, string fileExtension, Action<string> callback)
+        private static Result WhatIsIt(string argument)
         {
-            if (!File.Exists(argument))
+            try
+            {
+                var attr = File.GetAttributes(argument);
+                if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    return Result.Directory;
+
+                return Result.File;
+            }
+            catch (Exception e)
+            {
+                _errors.Add(e.ToString());
+                return Result.Failure;
+            }
+        }
+
+        private static bool IsValid(string argument, string fileExtension)
+        {
+            if (string.IsNullOrWhiteSpace(argument) || !File.Exists(argument))
+            {
+                _errors.Add($"{argument} doesn't exist!");
                 return false;
+            }
 
             var extension = Path.GetExtension(argument);
             if (string.IsNullOrWhiteSpace(extension))
@@ -37,14 +70,21 @@ namespace ProcessFiles
                 return false;
             }
 
-            if (!extension.Equals($".{fileExtension}"))
+            if (!extension.TrimStart('.').Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase))
             {
                 _errors.Add($"Extension of {argument} doesn't match {fileExtension}!");
                 return false;
             }
 
-            callback(argument);
             return true;
+        }
+
+        private static void ProcessFile(string path, string fileExtension, Action<string> callback)
+        {
+            if (!IsValid(path, fileExtension))
+                return;
+
+            callback(path);
         }
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> callback, bool recursive = false)
@@ -53,16 +93,17 @@ namespace ProcessFiles
 
             foreach (var argument in arguments)
             {
-                if (CheckForFile(argument, fileExtension, callback))
-                    continue;
-
-                if (!Directory.Exists(argument))
+                switch (WhatIsIt(argument))
                 {
-                    _errors.Add($"{argument} is neither file nor directory!");
-                    continue;
+                    case Result.File:
+                        ProcessFile(argument, fileExtension, callback);
+                        break;
+                    case Result.Directory:
+                        ProcessDir(argument, fileExtension, callback, recursive);
+                        break;
+                    case Result.Failure:
+                        continue;
                 }
-
-                ProcessDir(argument, fileExtension, callback, recursive);
             }
 
             return _errors;
