@@ -6,6 +6,9 @@ namespace ProcessFilesTests
 {
     public class ProcessFilesTests
     {
+        private readonly string testFolder = "./testFiles";
+        private readonly string testFile = "./testFiles/test1.txt";
+
         private List<string> expectedInSubFolder = new List<string>
         {
             "test2.txt",
@@ -23,7 +26,7 @@ namespace ProcessFilesTests
                 result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles" }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", Callback);
             Assert.Empty(errors);
             Assert.Equal(exptectedInFolder, result);
         }
@@ -57,7 +60,7 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles" }, "txt", Callback, true);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", Callback, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expected));
         }
@@ -77,7 +80,7 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", "./testFiles/test1.txt" }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", testFile }, "txt", Callback);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expected));
         }
@@ -91,7 +94,7 @@ namespace ProcessFilesTests
                 result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test1.txt" }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "txt", Callback);
             Assert.Empty(errors);
             Assert.Equal(exptectedInFolder, result);
         }
@@ -119,7 +122,7 @@ namespace ProcessFilesTests
                 result = value;
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test1.txt" }, "abc", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "abc", Callback);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
         }
