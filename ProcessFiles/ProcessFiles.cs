@@ -62,7 +62,14 @@ namespace ProcessFiles
             if (!IsValid(path, fileExtension))
                 return;
 
-            callback(path);
+            try
+            {
+                callback(path);
+            }
+            catch (Exception e)
+            {
+                _errors.Add(e.ToString());
+            }
         }
 
         private static void ProcessDir(string path, string fileExtension, Action<string> callback, bool recursive = false)
