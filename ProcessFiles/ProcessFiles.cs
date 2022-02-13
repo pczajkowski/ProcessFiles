@@ -111,6 +111,8 @@ namespace ProcessFiles
                         break;
                     case Result.Failure:
                         continue;
+                    default:
+                        break;
                 }
             }
 

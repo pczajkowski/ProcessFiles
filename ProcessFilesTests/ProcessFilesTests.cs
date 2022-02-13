@@ -9,13 +9,13 @@ namespace ProcessFilesTests
         private readonly string testFolder = "./testFiles";
         private readonly string testFile = "./testFiles/test1.txt";
 
-        private List<string> expectedInSubFolder = new List<string>
+        private readonly List<string> expectedInSubFolder = new()
         {
             "test2.txt",
             "test3.txt"
         };
 
-        private string exptectedInFolder = "test1.txt";
+        private readonly string exptectedInFolder = "test1.txt";
 
         [Fact]
         public void ProcessFolderTest()
