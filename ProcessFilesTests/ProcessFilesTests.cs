@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestPlatform.CoreUtilities.Extensions;
+using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
@@ -15,7 +16,18 @@ namespace ProcessFilesTests
             "test3.txt"
         };
 
+        private readonly List<string> expectedInSubFolderMultipleExtensions = new()
+        {
+            "test.json"
+        };
+
         private readonly string expectedInFolder = "test1.txt";
+
+        public ProcessFilesTests()
+        {
+            expectedInSubFolder.Add(expectedInFolder);
+            expectedInSubFolderMultipleExtensions.AddRange(expectedInSubFolder);
+        }
 
         [Fact]
         public void ProcessFolderTest()
@@ -31,7 +43,7 @@ namespace ProcessFilesTests
             Assert.Equal(expectedInFolder, result);
         }
 
-        private bool CheckResult(List<string> result, List<string> expected)
+        private static bool CheckResult(List<string> result, List<string> expected)
         {
             if (!result.Count.Equals(expected.Count))
                 return false;
@@ -48,12 +60,6 @@ namespace ProcessFilesTests
         [Fact]
         public void ProcessFolderRecursiveTest()
         {
-            var expected = new List<string>
-            {
-                expectedInFolder
-            };
-            expected.AddRange(expectedInSubFolder);
-
             var result = new List<string>();
             void Callback(string value)
             {
@@ -62,18 +68,12 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", Callback, true);
             Assert.Empty(errors);
-            Assert.True(CheckResult(result, expected));
+            Assert.True(CheckResult(result, expectedInSubFolder));
         }
 
         [Fact]
         public void ProcessFolderAndFileTest()
-        {
-            var expected = new List<string>
-            {
-                expectedInFolder
-            };
-            expected.AddRange(expectedInSubFolder);
-
+        {   
             var result = new List<string>();
             void Callback(string value)
             {
@@ -82,7 +82,7 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", testFile }, "txt", Callback);
             Assert.Empty(errors);
-            Assert.True(CheckResult(result, expected));
+            Assert.True(CheckResult(result, expectedInSubFolder));
         }
 
         [Fact]
@@ -125,6 +125,20 @@ namespace ProcessFilesTests
             var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "abc", Callback);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public void ProcessFolderRecursiveMultipleExtensionsTest()
+        {
+            var result = new List<string>();
+            void Callback(string value)
+            {
+                result.Add(Path.GetFileName(value));
+            }
+
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, new string[] { "txt", "json" }, Callback, true);
+            Assert.Empty(errors);
+            Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
         }
     }
 }

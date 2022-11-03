@@ -32,6 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="testFiles\subFolder\test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="testFiles\subFolder\test3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
