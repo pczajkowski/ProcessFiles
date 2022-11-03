@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5</TargetFrameworks>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
 </Project>

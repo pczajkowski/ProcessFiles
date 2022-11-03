@@ -14,7 +14,7 @@ namespace ProcessFiles
 
     public static class ProcessFiles
     {
-        private static List<string> _errors;
+        private static List<string> _errors = new();
 
         private static Result WhatIsIt(string path)
         {
@@ -33,7 +33,30 @@ namespace ProcessFiles
             }
         }
 
-        private static bool IsValid(string path, string fileExtension)
+        private static string? GetExtension(string path)
+        {
+            var extension = Path.GetExtension(path)?.TrimStart('.');
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                _errors.Add($"Can't establish extension of {path}!");
+                return null;
+            }
+
+            return extension;
+        }
+
+        private static bool CheckExtension(string extension, string[] validExtensions)
+        {
+            foreach (var validExtension in validExtensions)
+            {
+                if (extension.Equals(validExtension, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsValid(string path, string[] fileExtensions)
         {
             if (!File.Exists(path))
             {
@@ -41,27 +64,21 @@ namespace ProcessFiles
                 return false;
             }
 
-            var extension = Path.GetExtension(path)?.TrimStart('.');
-            if (string.IsNullOrWhiteSpace(extension))
-            {
-                _errors.Add($"Can't establish extension of {path}!");
+            var extension = GetExtension(path);
+            if (extension == null)
                 return false;
-            }
 
-            if (!extension.Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase))
+            if (!CheckExtension(extension, fileExtensions))
             {
-                _errors.Add($"Extension of {path} doesn't match {fileExtension}!");
+                _errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
                 return false;
             }
 
             return true;
         }
 
-        private static void ProcessFile(string path, string fileExtension, Action<string> action)
+        private static void PerformAction(string path, Action<string> action)
         {
-            if (!IsValid(path, fileExtension))
-                return;
-
             try
             {
                 action(path);
@@ -72,7 +89,15 @@ namespace ProcessFiles
             }
         }
 
-        private static void ProcessDir(string path, string fileExtension, Action<string> action, bool recursive = false)
+        private static void ProcessFile(string path, string[] fileExtensions, Action<string> action)
+        {
+            if (!IsValid(path, fileExtensions))
+                return;
+
+            PerformAction(path, action);
+        }
+
+        private static void ProcessDir(string path, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             if (!Directory.Exists(path))
             {
@@ -84,18 +109,28 @@ namespace ProcessFiles
             if (recursive)
                 searchOption = SearchOption.AllDirectories;
 
-            var files = Directory.GetFiles(path, $"*.{fileExtension}", searchOption);
+            List<string> files = new();
+            foreach (var extension in fileExtensions)
+            {
+                files.AddRange(Directory.GetFiles(path, $"*.{extension}", searchOption));
+            }
+
             if (!files.Any())
             {
-                _errors.Add($"There are no {fileExtension} files in {path}!");
+                _errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
                 return;
             }
 
             foreach (var file in files)
-                ProcessFile(file, fileExtension, action);
+                ProcessFile(file, fileExtensions, action);
         }
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
+        {
+            return Process(arguments, new string[] {fileExtension}, action, recursive);
+        }
+
+        public static IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             _errors = new List<string>();
 
@@ -104,10 +139,10 @@ namespace ProcessFiles
                 switch (WhatIsIt(argument))
                 {
                     case Result.File:
-                        ProcessFile(argument, fileExtension, action);
+                        ProcessFile(argument, fileExtensions, action);
                         break;
                     case Result.Directory:
-                        ProcessDir(argument, fileExtension, action, recursive);
+                        ProcessDir(argument, fileExtensions, action, recursive);
                         break;
                     case Result.Failure:
                         continue;
