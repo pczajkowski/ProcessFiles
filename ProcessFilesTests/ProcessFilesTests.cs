@@ -15,7 +15,7 @@ namespace ProcessFilesTests
             "test3.txt"
         };
 
-        private readonly string exptectedInFolder = "test1.txt";
+        private readonly string expectedInFolder = "test1.txt";
 
         [Fact]
         public void ProcessFolderTest()
@@ -28,7 +28,7 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", Callback);
             Assert.Empty(errors);
-            Assert.Equal(exptectedInFolder, result);
+            Assert.Equal(expectedInFolder, result);
         }
 
         private bool CheckResult(List<string> result, List<string> expected)
@@ -50,7 +50,7 @@ namespace ProcessFilesTests
         {
             var expected = new List<string>
             {
-                exptectedInFolder
+                expectedInFolder
             };
             expected.AddRange(expectedInSubFolder);
 
@@ -70,7 +70,7 @@ namespace ProcessFilesTests
         {
             var expected = new List<string>
             {
-                exptectedInFolder
+                expectedInFolder
             };
             expected.AddRange(expectedInSubFolder);
 
@@ -96,7 +96,7 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "txt", Callback);
             Assert.Empty(errors);
-            Assert.Equal(exptectedInFolder, result);
+            Assert.Equal(expectedInFolder, result);
         }
 
         [Fact]
@@ -110,7 +110,7 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test.txt" }, "txt", Callback);
             Assert.NotEmpty(errors);
-            Assert.NotEqual(exptectedInFolder, result);
+            Assert.NotEqual(expectedInFolder, result);
         }
 
         [Fact]
