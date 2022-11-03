@@ -35,20 +35,20 @@ namespace ProcessFiles
 
         private static bool IsValid(string argument, string fileExtension)
         {
-            if (string.IsNullOrWhiteSpace(argument) || !File.Exists(argument))
+            if (!File.Exists(argument))
             {
                 _errors.Add($"{argument} doesn't exist!");
                 return false;
             }
 
-            var extension = Path.GetExtension(argument);
+            var extension = Path.GetExtension(argument)?.TrimStart('.');
             if (string.IsNullOrWhiteSpace(extension))
             {
                 _errors.Add($"Can't establish extension of {argument}!");
                 return false;
             }
 
-            if (!extension.TrimStart('.').Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase))
+            if (!extension.Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase))
             {
                 _errors.Add($"Extension of {argument} doesn't match {fileExtension}!");
                 return false;
