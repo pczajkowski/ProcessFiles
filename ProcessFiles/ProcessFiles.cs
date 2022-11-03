@@ -16,11 +16,11 @@ namespace ProcessFiles
     {
         private static List<string> _errors;
 
-        private static Result WhatIsIt(string argument)
+        private static Result WhatIsIt(string path)
         {
             try
             {
-                var attr = File.GetAttributes(argument);
+                var attr = File.GetAttributes(path);
                 if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                     return Result.Directory;
 
@@ -33,38 +33,38 @@ namespace ProcessFiles
             }
         }
 
-        private static bool IsValid(string argument, string fileExtension)
+        private static bool IsValid(string path, string fileExtension)
         {
-            if (!File.Exists(argument))
+            if (!File.Exists(path))
             {
-                _errors.Add($"{argument} doesn't exist!");
+                _errors.Add($"{path} doesn't exist!");
                 return false;
             }
 
-            var extension = Path.GetExtension(argument)?.TrimStart('.');
+            var extension = Path.GetExtension(path)?.TrimStart('.');
             if (string.IsNullOrWhiteSpace(extension))
             {
-                _errors.Add($"Can't establish extension of {argument}!");
+                _errors.Add($"Can't establish extension of {path}!");
                 return false;
             }
 
             if (!extension.Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase))
             {
-                _errors.Add($"Extension of {argument} doesn't match {fileExtension}!");
+                _errors.Add($"Extension of {path} doesn't match {fileExtension}!");
                 return false;
             }
 
             return true;
         }
 
-        private static void ProcessFile(string path, string fileExtension, Action<string> callback)
+        private static void ProcessFile(string path, string fileExtension, Action<string> action)
         {
             if (!IsValid(path, fileExtension))
                 return;
 
             try
             {
-                callback(path);
+                action(path);
             }
             catch (Exception e)
             {
@@ -72,7 +72,7 @@ namespace ProcessFiles
             }
         }
 
-        private static void ProcessDir(string path, string fileExtension, Action<string> callback, bool recursive = false)
+        private static void ProcessDir(string path, string fileExtension, Action<string> action, bool recursive = false)
         {
             if (!Directory.Exists(path))
             {
@@ -92,10 +92,10 @@ namespace ProcessFiles
             }
 
             foreach (var file in files)
-                ProcessFile(file, fileExtension, callback);
+                ProcessFile(file, fileExtension, action);
         }
 
-        public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> callback, bool recursive = false)
+        public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
             _errors = new List<string>();
 
@@ -104,10 +104,10 @@ namespace ProcessFiles
                 switch (WhatIsIt(argument))
                 {
                     case Result.File:
-                        ProcessFile(argument, fileExtension, callback);
+                        ProcessFile(argument, fileExtension, action);
                         break;
                     case Result.Directory:
-                        ProcessDir(argument, fileExtension, callback, recursive);
+                        ProcessDir(argument, fileExtension, action, recursive);
                         break;
                     case Result.Failure:
                         continue;
