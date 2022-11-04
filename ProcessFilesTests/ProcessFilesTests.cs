@@ -110,7 +110,7 @@ namespace ProcessFilesTests
 
             var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test.txt" }, "txt", TestAction);
             Assert.NotEmpty(errors);
-            Assert.NotEqual(expectedInFolder, result);
+            Assert.Empty(result);
         }
 
         [Fact]
