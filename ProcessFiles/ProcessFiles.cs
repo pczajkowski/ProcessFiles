@@ -14,13 +14,13 @@ namespace ProcessFiles
 
     public static class ProcessFiles
     {
-        private static List<string> _errors;
+        private static List<string> _errors = new();
 
-        private static Result WhatIsIt(string argument)
+        private static Result WhatIsIt(string path)
         {
             try
             {
-                var attr = File.GetAttributes(argument);
+                var attr = File.GetAttributes(path);
                 if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                     return Result.Directory;
 
@@ -33,38 +33,55 @@ namespace ProcessFiles
             }
         }
 
-        private static bool IsValid(string argument, string fileExtension)
+        private static string? GetExtension(string path)
         {
-            if (string.IsNullOrWhiteSpace(argument) || !File.Exists(argument))
-            {
-                _errors.Add($"{argument} doesn't exist!");
-                return false;
-            }
-
-            var extension = Path.GetExtension(argument);
+            var extension = Path.GetExtension(path)?.TrimStart('.');
             if (string.IsNullOrWhiteSpace(extension))
             {
-                _errors.Add($"Can't establish extension of {argument}!");
+                _errors.Add($"Can't establish extension of {path}!");
+                return null;
+            }
+
+            return extension;
+        }
+
+        private static bool CheckExtension(string extension, string[] validExtensions)
+        {
+            foreach (var validExtension in validExtensions)
+            {
+                if (extension.Equals(validExtension, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsValid(string path, string[] fileExtensions)
+        {
+            if (!File.Exists(path))
+            {
+                _errors.Add($"{path} doesn't exist!");
                 return false;
             }
 
-            if (!extension.TrimStart('.').Equals(fileExtension, StringComparison.InvariantCultureIgnoreCase))
+            var extension = GetExtension(path);
+            if (extension == null)
+                return false;
+
+            if (!CheckExtension(extension, fileExtensions))
             {
-                _errors.Add($"Extension of {argument} doesn't match {fileExtension}!");
+                _errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
                 return false;
             }
 
             return true;
         }
 
-        private static void ProcessFile(string path, string fileExtension, Action<string> callback)
+        private static void PerformAction(string path, Action<string> action)
         {
-            if (!IsValid(path, fileExtension))
-                return;
-
             try
             {
-                callback(path);
+                action(path);
             }
             catch (Exception e)
             {
@@ -72,7 +89,15 @@ namespace ProcessFiles
             }
         }
 
-        private static void ProcessDir(string path, string fileExtension, Action<string> callback, bool recursive = false)
+        private static void ProcessFile(string path, string[] fileExtensions, Action<string> action)
+        {
+            if (!IsValid(path, fileExtensions))
+                return;
+
+            PerformAction(path, action);
+        }
+
+        private static void ProcessDir(string path, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             if (!Directory.Exists(path))
             {
@@ -80,22 +105,34 @@ namespace ProcessFiles
                 return;
             }
 
-            var searchOption = SearchOption.TopDirectoryOnly;
-            if (recursive)
-                searchOption = SearchOption.AllDirectories;
+            var searchOption = recursive switch
+            {
+                false => SearchOption.TopDirectoryOnly,
+                true => SearchOption.AllDirectories,
+            };
 
-            var files = Directory.GetFiles(path, $"*.{fileExtension}", searchOption);
+            List<string> files = new();
+            foreach (var extension in fileExtensions)
+            {
+                files.AddRange(Directory.GetFiles(path, $"*.{extension}", searchOption));
+            }
+
             if (!files.Any())
             {
-                _errors.Add($"There are no {fileExtension} files in {path}!");
+                _errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
                 return;
             }
 
             foreach (var file in files)
-                ProcessFile(file, fileExtension, callback);
+                ProcessFile(file, fileExtensions, action);
         }
 
-        public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> callback, bool recursive = false)
+        public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
+        {
+            return Process(arguments, new string[] {fileExtension}, action, recursive);
+        }
+
+        public static IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             _errors = new List<string>();
 
@@ -104,10 +141,10 @@ namespace ProcessFiles
                 switch (WhatIsIt(argument))
                 {
                     case Result.File:
-                        ProcessFile(argument, fileExtension, callback);
+                        ProcessFile(argument, fileExtensions, action);
                         break;
                     case Result.Directory:
-                        ProcessDir(argument, fileExtension, callback, recursive);
+                        ProcessDir(argument, fileExtensions, action, recursive);
                         break;
                     case Result.Failure:
                         continue;

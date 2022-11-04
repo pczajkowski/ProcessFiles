@@ -15,23 +15,34 @@ namespace ProcessFilesTests
             "test3.txt"
         };
 
-        private readonly string exptectedInFolder = "test1.txt";
+        private readonly List<string> expectedInSubFolderMultipleExtensions = new()
+        {
+            "test.json"
+        };
+
+        private readonly string expectedInFolder = "test1.txt";
+
+        public ProcessFilesTests()
+        {
+            expectedInSubFolder.Add(expectedInFolder);
+            expectedInSubFolderMultipleExtensions.AddRange(expectedInSubFolder);
+        }
 
         [Fact]
         public void ProcessFolderTest()
         {
             var result = string.Empty;
-            void Callback(string value)
+            void TestAction(string value)
             {
                 result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(exptectedInFolder, result);
+            Assert.Equal(expectedInFolder, result);
         }
 
-        private bool CheckResult(List<string> result, List<string> expected)
+        private static bool CheckResult(List<string> result, List<string> expected)
         {
             if (!result.Count.Equals(expected.Count))
                 return false;
@@ -48,83 +59,85 @@ namespace ProcessFilesTests
         [Fact]
         public void ProcessFolderRecursiveTest()
         {
-            var expected = new List<string>
-            {
-                exptectedInFolder
-            };
-            expected.AddRange(expectedInSubFolder);
-
             var result = new List<string>();
-            void Callback(string value)
+            void TestAction(string value)
             {
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", Callback, true);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", TestAction, true);
             Assert.Empty(errors);
-            Assert.True(CheckResult(result, expected));
+            Assert.True(CheckResult(result, expectedInSubFolder));
         }
 
         [Fact]
         public void ProcessFolderAndFileTest()
-        {
-            var expected = new List<string>
-            {
-                exptectedInFolder
-            };
-            expected.AddRange(expectedInSubFolder);
-
+        {   
             var result = new List<string>();
-            void Callback(string value)
+            void TestAction(string value)
             {
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", testFile }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", testFile }, "txt", TestAction);
             Assert.Empty(errors);
-            Assert.True(CheckResult(result, expected));
+            Assert.True(CheckResult(result, expectedInSubFolder));
         }
 
         [Fact]
         public void ProcessFileTest()
         {
             var result = string.Empty;
-            void Callback(string value)
+            void TestAction(string value)
             {
                 result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(exptectedInFolder, result);
+            Assert.Equal(expectedInFolder, result);
         }
 
         [Fact]
         public void ProcessFileNotExistTest()
         {
             var result = string.Empty;
-            void Callback(string value)
+            void TestAction(string value)
             {
                 result = value;
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test.txt" }, "txt", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test.txt" }, "txt", TestAction);
             Assert.NotEmpty(errors);
-            Assert.NotEqual(exptectedInFolder, result);
+            Assert.Empty(result);
         }
 
         [Fact]
         public void ProcessFileNotMatchExtensionTest()
         {
             var result = string.Empty;
-            void Callback(string value)
+            void TestAction(string value)
             {
                 result = value;
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "abc", Callback);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "abc", TestAction);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public void ProcessFolderRecursiveMultipleExtensionsTest()
+        {
+            var result = new List<string>();
+            void TestAction(string value)
+            {
+                result.Add(Path.GetFileName(value));
+            }
+
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, new string[] { "txt", "json" }, TestAction, true);
+            Assert.Empty(errors);
+            Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
         }
     }
 }
