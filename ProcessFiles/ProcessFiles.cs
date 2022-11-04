@@ -105,9 +105,11 @@ namespace ProcessFiles
                 return;
             }
 
-            var searchOption = SearchOption.TopDirectoryOnly;
-            if (recursive)
-                searchOption = SearchOption.AllDirectories;
+            var searchOption = recursive switch
+            {
+                false => SearchOption.TopDirectoryOnly,
+                true => SearchOption.AllDirectories,
+            };
 
             List<string> files = new();
             foreach (var extension in fileExtensions)
