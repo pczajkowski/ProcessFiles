@@ -85,7 +85,7 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                _errors.Add(e.ToString());
+                _errors.Add($"{path}:\n{e}");
             }
         }
 
