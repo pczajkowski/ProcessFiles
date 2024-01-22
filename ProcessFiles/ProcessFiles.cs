@@ -14,7 +14,7 @@ namespace ProcessFiles
 
     public static class ProcessFiles
     {
-        private static List<string> _errors = new();
+        private static List<string> errors = new();
 
         private static Result WhatIsIt(string path)
         {
@@ -28,21 +28,18 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                _errors.Add(e.ToString());
+                errors.Add(e.ToString());
                 return Result.Failure;
             }
         }
 
         private static string? GetExtension(string path)
         {
-            var extension = Path.GetExtension(path)?.TrimStart('.');
-            if (string.IsNullOrWhiteSpace(extension))
-            {
-                _errors.Add($"Can't establish extension of {path}!");
-                return null;
-            }
-
-            return extension;
+            var extension = Path.GetExtension(path).TrimStart('.');
+            if (!string.IsNullOrWhiteSpace(extension)) return extension;
+            
+            errors.Add($"Can't establish extension of {path}!");
+            return null;
         }
 
         private static bool CheckExtension(string extension, string[] validExtensions)
@@ -60,7 +57,7 @@ namespace ProcessFiles
         {
             if (!File.Exists(path))
             {
-                _errors.Add($"{path} doesn't exist!");
+                errors.Add($"{path} doesn't exist!");
                 return false;
             }
 
@@ -70,7 +67,7 @@ namespace ProcessFiles
 
             if (!CheckExtension(extension, fileExtensions))
             {
-                _errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
+                errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
                 return false;
             }
 
@@ -85,7 +82,7 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                _errors.Add($"{path}:\n{e}");
+                errors.Add($"{path}:\n{e}");
             }
         }
 
@@ -101,7 +98,7 @@ namespace ProcessFiles
         {
             if (!Directory.Exists(path))
             {
-                _errors.Add($"{path} doesn't exist!");
+                errors.Add($"{path} doesn't exist!");
                 return;
             }
 
@@ -119,7 +116,7 @@ namespace ProcessFiles
 
             if (!files.Any())
             {
-                _errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
+                errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
                 return;
             }
 
@@ -129,12 +126,12 @@ namespace ProcessFiles
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
-            return Process(arguments, new string[] {fileExtension}, action, recursive);
+            return Process(arguments, new[] {fileExtension}, action, recursive);
         }
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
-            _errors = new List<string>();
+            errors = new List<string>();
 
             foreach (var argument in arguments)
             {
@@ -148,12 +145,10 @@ namespace ProcessFiles
                         break;
                     case Result.Failure:
                         continue;
-                    default:
-                        break;
                 }
             }
 
-            return _errors;
+            return errors;
         }
     }
 }

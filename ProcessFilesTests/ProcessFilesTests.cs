@@ -135,7 +135,7 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, new string[] { "txt", "json" }, TestAction, true);
+            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, new[] { "txt", "json" }, TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
         }
