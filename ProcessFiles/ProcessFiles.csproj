@@ -1,8 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Nullable>enable</Nullable>
+		<TargetFramework>net6.0</TargetFramework>
+		<Version>0.1.0</Version>
+		<Title>ProcessFiles</Title>
+		<Authors>Piotr Czajkowski</Authors>
+		<Description>Easily process files from command line arguments</Description>
+		<PackageProjectUrl>https://git.liox.eu/pczajkowski/ProcessFiles</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/pczajkowski/ProcessFiles</RepositoryUrl>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+		<RepositoryType>GitHub</RepositoryType>
+	</PropertyGroup>
 
+	<ItemGroup>
+		<None Include="../README.md" Pack="true" PackagePath=""/>
+		<None Include="../LICENSE.md" Pack="true" PackagePath=""/>
+	</ItemGroup>
 </Project>
