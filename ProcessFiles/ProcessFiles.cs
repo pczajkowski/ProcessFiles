@@ -3,6 +3,7 @@ using ProcessFiles.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ProcessFiles
 {
@@ -40,16 +41,7 @@ namespace ProcessFiles
         }
 
         private static bool CheckExtension(string extension, string[] validExtensions)
-        {
-            foreach (var validExtension in validExtensions)
-            {
-                if (extension.Equals(validExtension, StringComparison.InvariantCultureIgnoreCase))
-                    return true;
-            }
-
-            return false;
-        }
-
+            => validExtensions.Any(x => x.Equals(extension, StringComparison.InvariantCultureIgnoreCase));
         private bool IsValid(string path, string[] fileExtensions)
         {
             if (!fileSystem.File.Exists(path))
