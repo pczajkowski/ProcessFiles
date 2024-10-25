@@ -14,7 +14,7 @@ namespace ProcessFiles
             try
             {
                 var attr = File.GetAttributes(path);
-                if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                if (attr.HasFlag(FileAttributes.Directory))
                     return Result.Directory;
 
                 return Result.File;
