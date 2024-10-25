@@ -2,6 +2,6 @@
 {
     public interface IFileSystem
     {
-        public IFile File { get; set; }
+        public IFile File { get; }
     }
 }

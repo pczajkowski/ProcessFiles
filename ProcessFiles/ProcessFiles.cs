@@ -8,14 +8,14 @@ namespace ProcessFiles
 {
     public class ProcessFiles(IFileSystem? fileSystem = null)
     {
-        private readonly IFileSystem? fileSystem = fileSystem;
+        private readonly IFileSystem fileSystem = fileSystem ?? new DefaultFileSystem();
         private List<string> errors = [];
 
         private Result WhatIsIt(string path)
         {
             try
             {
-                var attr = File.GetAttributes(path);
+                var attr = fileSystem.File.GetAttributes(path);
                 if (attr.HasFlag(FileAttributes.Directory))
                     return Result.Directory;
 
