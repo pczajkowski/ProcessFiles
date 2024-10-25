@@ -1,17 +1,11 @@
-﻿using System;
+﻿using ProcessFiles.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace ProcessFiles
 {
-    public enum Result
-    {
-        File,
-        Directory,
-        Failure
-    }
-
     public static class ProcessFiles
     {
         private static List<string> errors = new();
