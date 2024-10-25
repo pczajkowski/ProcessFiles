@@ -8,7 +8,7 @@ namespace ProcessFiles
 {
     public static class ProcessFiles
     {
-        private static List<string> errors = new();
+        private static List<string> errors = [];
 
         private static Result WhatIsIt(string path)
         {
@@ -22,7 +22,9 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                errors.Add(e.ToString());
+                errors.Add($"Problem getting {path} attributes:\n" +
+                    $"{e.Message} - {e.Source} - {e.TargetSite}");
+                
                 return Result.Failure;
             }
         }
@@ -76,7 +78,7 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                errors.Add($"{path}:\n{e}");
+                errors.Add($"{path}:\n{e.Message} - {e.Source} - {e.TargetSite}");
             }
         }
 
@@ -102,13 +104,13 @@ namespace ProcessFiles
                 true => SearchOption.AllDirectories,
             };
 
-            List<string> files = new();
+            List<string> files = [];
             foreach (var extension in fileExtensions)
             {
                 files.AddRange(Directory.GetFiles(path, $"*.{extension}", searchOption));
             }
 
-            if (!files.Any())
+            if (files.Count == 0)
             {
                 errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
                 return;
@@ -120,13 +122,12 @@ namespace ProcessFiles
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
-            return Process(arguments, new[] {fileExtension}, action, recursive);
+            return Process(arguments, [fileExtension], action, recursive);
         }
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
-            errors = new List<string>();
-
+            errors = [];
             foreach (var argument in arguments)
             {
                 switch (WhatIsIt(argument))
