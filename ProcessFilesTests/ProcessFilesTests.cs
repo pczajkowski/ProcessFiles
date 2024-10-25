@@ -9,22 +9,23 @@ namespace ProcessFilesTests
         private readonly string testFolder = "./testFiles";
         private readonly string testFile = "./testFiles/test1.txt";
 
-        private readonly List<string> expectedInSubFolder = new()
-        {
+        private static readonly string expectedInFolder = "test1.txt";
+
+        private readonly List<string> expectedInSubFolder =
+        [
+            expectedInFolder,
             "test2.txt",
             "test3.txt"
-        };
+        ];
 
-        private readonly List<string> expectedInSubFolderMultipleExtensions = new()
-        {
+        private readonly List<string> expectedInSubFolderMultipleExtensions =
+        [
             "test.json"
-        };
+        ];
 
-        private readonly string expectedInFolder = "test1.txt";
 
         public ProcessFilesTests()
         {
-            expectedInSubFolder.Add(expectedInFolder);
             expectedInSubFolderMultipleExtensions.AddRange(expectedInSubFolder);
         }
 
