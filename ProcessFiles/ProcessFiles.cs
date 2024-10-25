@@ -32,7 +32,7 @@ namespace ProcessFiles
 
         private string? GetExtension(string path)
         {
-            var extension = Path.GetExtension(path).TrimStart('.');
+            var extension = fileSystem.Path.GetExtension(path)?.TrimStart('.');
             if (!string.IsNullOrWhiteSpace(extension)) return extension;
             
             errors.Add($"Can't establish extension of {path}!");

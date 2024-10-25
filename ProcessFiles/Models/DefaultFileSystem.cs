@@ -9,5 +9,8 @@ namespace ProcessFiles.Models
 
         private readonly IDirectory directory = new DefaultDirectory();
         public IDirectory Directory => directory;
+
+        private readonly IPath path = new DefaultPath();
+        public IPath Path => path;
     }
 }
