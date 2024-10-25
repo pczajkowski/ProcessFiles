@@ -108,7 +108,7 @@ namespace ProcessFiles
             List<string> files = [];
             foreach (var extension in fileExtensions)
             {
-                files.AddRange(Directory.GetFiles(path, $"*.{extension}", searchOption));
+                files.AddRange(fileSystem.Directory.GetFiles(path, $"*.{extension}", searchOption));
             }
 
             if (files.Count == 0)
