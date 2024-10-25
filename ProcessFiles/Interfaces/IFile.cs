@@ -5,5 +5,6 @@ namespace ProcessFiles.Interfaces
     public interface IFile
     {
         public FileAttributes GetAttributes(string path);
+        public bool Exists(string? path);
     }
 }

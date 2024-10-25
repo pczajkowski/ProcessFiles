@@ -52,7 +52,7 @@ namespace ProcessFiles
 
         private bool IsValid(string path, string[] fileExtensions)
         {
-            if (!File.Exists(path))
+            if (!fileSystem.File.Exists(path))
             {
                 errors.Add($"{path} doesn't exist!");
                 return false;
