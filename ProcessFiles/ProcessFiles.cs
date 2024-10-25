@@ -1,15 +1,17 @@
-﻿using ProcessFiles.Models;
+﻿using ProcessFiles.Interfaces;
+using ProcessFiles.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace ProcessFiles
 {
-    public static class ProcessFiles
+    public class ProcessFiles(IFileSystem? fileSystem = null)
     {
-        private static List<string> errors = [];
+        private readonly IFileSystem? fileSystem = fileSystem;
+        private List<string> errors = [];
 
-        private static Result WhatIsIt(string path)
+        private Result WhatIsIt(string path)
         {
             try
             {
@@ -28,7 +30,7 @@ namespace ProcessFiles
             }
         }
 
-        private static string? GetExtension(string path)
+        private string? GetExtension(string path)
         {
             var extension = Path.GetExtension(path).TrimStart('.');
             if (!string.IsNullOrWhiteSpace(extension)) return extension;
@@ -48,7 +50,7 @@ namespace ProcessFiles
             return false;
         }
 
-        private static bool IsValid(string path, string[] fileExtensions)
+        private bool IsValid(string path, string[] fileExtensions)
         {
             if (!File.Exists(path))
             {
@@ -69,7 +71,7 @@ namespace ProcessFiles
             return true;
         }
 
-        private static void PerformAction(string path, Action<string> action)
+        private void PerformAction(string path, Action<string> action)
         {
             try
             {
@@ -81,7 +83,7 @@ namespace ProcessFiles
             }
         }
 
-        private static void ProcessFile(string path, string[] fileExtensions, Action<string> action)
+        private void ProcessFile(string path, string[] fileExtensions, Action<string> action)
         {
             if (!IsValid(path, fileExtensions))
                 return;
@@ -89,7 +91,7 @@ namespace ProcessFiles
             PerformAction(path, action);
         }
 
-        private static void ProcessDir(string path, string[] fileExtensions, Action<string> action, bool recursive = false)
+        private void ProcessDir(string path, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             if (!Directory.Exists(path))
             {
@@ -119,12 +121,12 @@ namespace ProcessFiles
                 ProcessFile(file, fileExtensions, action);
         }
 
-        public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
+        public IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
             return Process(arguments, [fileExtension], action, recursive);
         }
 
-        public static IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
+        public IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             errors = [];
             foreach (var argument in arguments)

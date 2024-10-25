@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Nullable>enable</Nullable>
 		<TargetFramework>net8.0</TargetFramework>
-		<Version>0.2.0</Version>
+		<Version>1.0.0</Version>
 		<Title>ProcessFiles</Title>
 		<Authors>Piotr Czajkowski</Authors>
 		<Description>Easily process files from command line arguments</Description>
