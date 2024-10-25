@@ -3,5 +3,6 @@
     public interface IFileSystem
     {
         public IFile File { get; }
+        public IDirectory Directory { get; }
     }
 }

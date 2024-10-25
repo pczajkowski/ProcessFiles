@@ -93,7 +93,7 @@ namespace ProcessFiles
 
         private void ProcessDir(string path, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
-            if (!Directory.Exists(path))
+            if (!fileSystem.Directory.Exists(path))
             {
                 errors.Add($"{path} doesn't exist!");
                 return;

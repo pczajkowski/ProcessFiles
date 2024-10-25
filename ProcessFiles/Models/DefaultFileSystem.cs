@@ -6,5 +6,8 @@ namespace ProcessFiles.Models
     {
         private readonly IFile file = new DefaultFile();
         public IFile File => file;
+
+        private readonly IDirectory directory = new DefaultDirectory();
+        public IDirectory Directory => directory;
     }
 }
