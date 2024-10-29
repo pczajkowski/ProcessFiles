@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace ProcessFilesTests
 {
     public class ProcessFilesTests
     {
-        private readonly string testFolder = "./testFiles";
-        private readonly string testFile = "./testFiles/test1.txt";
+        private const string TestFolder = "./testFiles";
+        private const string TestFile = "./testFiles/test1.txt";
 
-        private static readonly string expectedInFolder = "test1.txt";
+        private const string ExpectedInFolder = "test1.txt";
 
         private readonly List<string> expectedInSubFolder =
         [
-            expectedInFolder,
+            ExpectedInFolder,
             "test2.txt",
             "test3.txt"
         ];
@@ -39,23 +40,14 @@ namespace ProcessFilesTests
             }
 
             var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process([testFolder], "txt", TestAction);
+            var errors = test.Process([TestFolder], "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(expectedInFolder, result);
+            Assert.Equal(ExpectedInFolder, result);
         }
 
         private static bool CheckResult(List<string> result, List<string> expected)
         {
-            if (!result.Count.Equals(expected.Count))
-                return false;
-
-            foreach (var item in result)
-            {
-                if (!expected.Contains(item))
-                    return false;
-            }
-
-            return true;
+            return result.Count.Equals(expected.Count) && result.All(expected.Contains);
         }
 
         [Fact]
@@ -68,7 +60,7 @@ namespace ProcessFilesTests
             }
 
             var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process([testFolder], "txt", TestAction, true);
+            var errors = test.Process([TestFolder], "txt", TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolder));
         }
@@ -83,7 +75,7 @@ namespace ProcessFilesTests
             }
 
             var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process(["./testFiles/subFolder", testFile], "txt", TestAction);
+            var errors = test.Process(["./testFiles/subFolder", TestFile], "txt", TestAction);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolder));
         }
@@ -98,9 +90,9 @@ namespace ProcessFilesTests
             }
 
             var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process([testFile], "txt", TestAction);
+            var errors = test.Process([TestFile], "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(expectedInFolder, result);
+            Assert.Equal(ExpectedInFolder, result);
         }
 
         [Fact]
@@ -128,7 +120,7 @@ namespace ProcessFilesTests
             }
 
             var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process([testFile], "abc", TestAction);
+            var errors = test.Process([TestFile], "abc", TestAction);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
         }
@@ -143,7 +135,7 @@ namespace ProcessFilesTests
             }
 
             var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process([testFolder], ["txt", "json"], TestAction, true);
+            var errors = test.Process([TestFolder], ["txt", "json"], TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
         }
