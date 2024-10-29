@@ -17,10 +17,7 @@ namespace ProcessFiles
             try
             {
                 var attr = fileSystem.File.GetAttributes(path);
-                if (attr.HasFlag(FileAttributes.Directory))
-                    return Result.Directory;
-
-                return Result.File;
+                return attr.HasFlag(FileAttributes.Directory) ? Result.Directory : Result.File;
             }
             catch (Exception e)
             {
@@ -54,13 +51,10 @@ namespace ProcessFiles
             if (extension == null)
                 return false;
 
-            if (!CheckExtension(extension, fileExtensions))
-            {
-                errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
-                return false;
-            }
-
-            return true;
+            if (CheckExtension(extension, fileExtensions)) return true;
+            
+            errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
+            return false;
         }
 
         private void PerformAction(string path, Action<string> action)
