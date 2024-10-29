@@ -1,8 +1,6 @@
 ﻿using NSubstitute;
 using ProcessFiles.Interfaces;
-using System.IO;
 using Xunit;
-using Xunit.Sdk;
 
 namespace ProcessFilesTests
 {
@@ -85,7 +83,7 @@ namespace ProcessFilesTests
             fakeFileSystem.File.Exists(Arg.Any<string>()).Returns(true);
             fakeFileSystem.Path.GetExtension(Arg.Any<string>()).Returns("txt");
 
-            var expectedValue = "imaginary.txt";
+            const string expectedValue = "imaginary.txt";
             var test = new ProcessFiles.ProcessFiles(fakeFileSystem);
             var errors = test.Process([expectedValue], "txt", TestAction);
             Assert.Empty(errors);
