@@ -4,7 +4,7 @@ using Xunit;
 
 namespace ProcessFilesTests
 {
-    public class ProcessFiles_UnitTests
+    public class ProcessFilesUnitTests
     {
         [Fact]
         public void ProcessFileNotExistTest()
