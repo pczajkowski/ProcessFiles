@@ -1,11 +1,11 @@
-﻿using ProcessFiles.Interfaces;
-using ProcessFiles.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FileOperations.Interfaces;
+using FileOperations.Models;
 
-namespace ProcessFiles
+namespace FileOperations
 {
     public class ProcessFiles(IFileSystem? fileSystem = null)
     {

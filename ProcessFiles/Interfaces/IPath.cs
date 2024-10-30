@@ -1,4 +1,4 @@
-﻿namespace ProcessFiles.Interfaces
+﻿namespace FileOperations.Interfaces
 {
     public interface IPath
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ProcessFiles.Interfaces
+namespace FileOperations.Interfaces
 {
     public interface IDirectory
     {

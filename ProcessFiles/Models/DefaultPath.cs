@@ -1,7 +1,7 @@
-﻿using ProcessFiles.Interfaces;
-using System.IO;
+﻿using System.IO;
+using FileOperations.Interfaces;
 
-namespace ProcessFiles.Models
+namespace FileOperations.Models
 {
     public class DefaultPath : IPath
     {

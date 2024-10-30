@@ -1,6 +1,6 @@
-﻿using ProcessFiles.Interfaces;
+﻿using FileOperations.Interfaces;
 
-namespace ProcessFiles.Models
+namespace FileOperations.Models
 {
     public class DefaultFileSystem : IFileSystem
     {

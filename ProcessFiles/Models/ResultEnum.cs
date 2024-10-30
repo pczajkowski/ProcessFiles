@@ -1,4 +1,4 @@
-﻿namespace ProcessFiles.Models
+﻿namespace FileOperations.Models
 {
     public enum Result
     {
