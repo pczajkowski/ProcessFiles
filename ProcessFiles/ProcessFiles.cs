@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FileOperations.Interfaces;
-using FileOperations.Models;
+using ProcessFiles.Interfaces;
+using ProcessFiles.Models;
 
-namespace FileOperations
+namespace ProcessFiles
 {
-    public class ProcessFiles(IFileSystem? fileSystem = null)
+    public class FileProcessing(IFileSystem? fileSystem = null)
     {
         private readonly IFileSystem fileSystem = fileSystem ?? new DefaultFileSystem();
         private List<string> errors = [];

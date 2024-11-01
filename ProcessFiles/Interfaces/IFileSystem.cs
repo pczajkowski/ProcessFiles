@@ -1,4 +1,4 @@
-﻿namespace FileOperations.Interfaces
+﻿namespace ProcessFiles.Interfaces
 {
     public interface IFileSystem
     {

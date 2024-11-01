@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using Xunit;
-using FileOperations;
+using ProcessFiles;
 
 namespace ProcessFilesTests
 {
@@ -40,7 +40,7 @@ namespace ProcessFilesTests
                 result = Path.GetFileName(value);
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process([TestFolder], "txt", TestAction);
             Assert.Empty(errors);
             Assert.Equal(ExpectedInFolder, result);
@@ -60,7 +60,7 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process([TestFolder], "txt", TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolder));
@@ -75,7 +75,7 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process(["./testFiles/subFolder", TestFile], "txt", TestAction);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolder));
@@ -90,7 +90,7 @@ namespace ProcessFilesTests
                 result = Path.GetFileName(value);
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process([TestFile], "txt", TestAction);
             Assert.Empty(errors);
             Assert.Equal(ExpectedInFolder, result);
@@ -105,7 +105,7 @@ namespace ProcessFilesTests
                 result = value;
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process(["./testFiles/test.txt"], "txt", TestAction);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
@@ -120,7 +120,7 @@ namespace ProcessFilesTests
                 result = value;
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process([TestFile], "abc", TestAction);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
@@ -135,7 +135,7 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var test = new ProcessFiles();
+            var test = new FileProcessing();
             var errors = test.Process([TestFolder], ["txt", "json"], TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));

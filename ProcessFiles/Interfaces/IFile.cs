@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace FileOperations.Interfaces
+namespace ProcessFiles.Interfaces
 {
     public interface IFile
     {

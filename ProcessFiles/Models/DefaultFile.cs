@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using FileOperations.Interfaces;
+using ProcessFiles.Interfaces;
 
-namespace FileOperations.Models
+namespace ProcessFiles.Models
 {
     public class DefaultFile : IFile
     {
