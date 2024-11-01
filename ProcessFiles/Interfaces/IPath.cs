@@ -1,7 +1,6 @@
-﻿namespace ProcessFiles.Interfaces
+﻿namespace ProcessFiles.Interfaces;
+
+public interface IPath
 {
-    public interface IPath
-    {
-        public string? GetExtension(string? path);
-    }
+    public string? GetExtension(string? path);
 }
