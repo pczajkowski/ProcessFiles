@@ -21,10 +21,7 @@ namespace ProcessFiles
             try
             {
                 var attr = File.GetAttributes(path);
-                if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-                    return Result.Directory;
-
-                return Result.File;
+                return (attr & FileAttributes.Directory) == FileAttributes.Directory ? Result.Directory : Result.File;
             }
             catch (Exception e)
             {
@@ -44,13 +41,7 @@ namespace ProcessFiles
 
         private static bool CheckExtension(string extension, string[] validExtensions)
         {
-            foreach (var validExtension in validExtensions)
-            {
-                if (extension.Equals(validExtension, StringComparison.InvariantCultureIgnoreCase))
-                    return true;
-            }
-
-            return false;
+            return validExtensions.Any(validExtension => extension.Equals(validExtension, StringComparison.InvariantCultureIgnoreCase));
         }
 
         private static bool IsValid(string path, string[] fileExtensions)
@@ -65,13 +56,11 @@ namespace ProcessFiles
             if (extension == null)
                 return false;
 
-            if (!CheckExtension(extension, fileExtensions))
-            {
-                errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
-                return false;
-            }
+            if (CheckExtension(extension, fileExtensions)) return true;
+            
+            errors.Add($"Extension of {path} doesn't match any extension ({string.Join(", ", fileExtensions)})!");
+            return false;
 
-            return true;
         }
 
         private static void PerformAction(string path, Action<string> action)
@@ -108,13 +97,13 @@ namespace ProcessFiles
                 true => SearchOption.AllDirectories,
             };
 
-            List<string> files = new();
+            List<string> files = [];
             foreach (var extension in fileExtensions)
             {
                 files.AddRange(Directory.GetFiles(path, $"*.{extension}", searchOption));
             }
 
-            if (!files.Any())
+            if (files.Count == 0)
             {
                 errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
                 return;
@@ -126,7 +115,7 @@ namespace ProcessFiles
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
-            return Process(arguments, new[] {fileExtension}, action, recursive);
+            return Process(arguments, [fileExtension], action, recursive);
         }
 
         public static IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
@@ -144,6 +133,7 @@ namespace ProcessFiles
                         ProcessDir(argument, fileExtensions, action, recursive);
                         break;
                     case Result.Failure:
+                    default:
                         continue;
                 }
             }
