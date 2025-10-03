@@ -100,7 +100,15 @@ namespace ProcessFiles
             List<string> files = [];
             foreach (var extension in fileExtensions)
             {
-                files.AddRange(Directory.GetFiles(path, $"*.{extension}", searchOption));
+                try
+                {
+                    var filesWithExtension = Directory.GetFiles(path, $"*.{extension}", searchOption);
+                    files.AddRange(filesWithExtension);
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"Problem getting files: {e.Message} ({e.Source})");
+                }
             }
 
             if (files.Count == 0)
