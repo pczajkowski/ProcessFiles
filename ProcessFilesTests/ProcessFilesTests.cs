@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace ProcessFilesTests
@@ -142,6 +143,36 @@ namespace ProcessFilesTests
             var errors = test.Process([testFolder], ["txt", "json"], TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
+        }
+        
+        [Fact]
+        public void ProcessWhenActionInvokesProcessShouldPreserveOuterErrors()
+        {
+            var missingPath = Path.Combine(testFolder, "missing.txt");
+            var nestedMissingPath = Path.Combine(testFolder, "nested-missing.txt");
+
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(
+                [missingPath, testFile],
+                "txt",
+                _ => test.Process([nestedMissingPath], "txt", _ => { })).ToList();
+
+            Assert.True(errors.Exists(x => x.StartsWith($"Problem getting attributes of {missingPath}")));
+            Assert.True(errors.Exists(x => x.StartsWith($"Problem getting attributes of {nestedMissingPath}")));
+        }
+
+        [Fact]
+        public void ProcessDirectoryEnumerationFailureShouldBeReportedAsError()
+        {
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(
+                [testFolder],
+                ["txt["], // invalid search pattern forces Directory.GetFiles to throw
+                _ => { }).ToList();
+
+            Assert.Single(errors);
+            Assert.Contains(testFolder, errors[0]);
+            Assert.Contains("txt[", errors[0]);
         }
     }
 }
