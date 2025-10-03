@@ -41,7 +41,7 @@ namespace ProcessFiles
 
         private bool CheckExtension(string extension, string[] validExtensions)
         {
-            return validExtensions.Any(validExtension => extension.Equals(validExtension, StringComparison.InvariantCultureIgnoreCase));
+            return validExtensions.Any(validExtension => extension.Equals(validExtension, StringComparison.OrdinalIgnoreCase));
         }
 
         private bool IsValid(string path, string[] fileExtensions)
