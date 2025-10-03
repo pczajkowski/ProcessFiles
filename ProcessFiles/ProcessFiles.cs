@@ -14,7 +14,7 @@ namespace ProcessFiles
 
     public class ProcessFiles
     {
-        private List<string> errors = [];
+        private readonly List<string> errors = [];
 
         private Result WhatIsIt(string path)
         {
