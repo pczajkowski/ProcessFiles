@@ -25,7 +25,7 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                errors.Add(e.ToString());
+                errors.Add($"Problem getting attributes of {path}: {e.Message} ({e.Source})");
                 return Result.Failure;
             }
         }
@@ -71,7 +71,7 @@ namespace ProcessFiles
             }
             catch (Exception e)
             {
-                errors.Add($"{path}:\n{e}");
+                errors.Add($"Problem performing action on {path}: {e.Message} ({e.Source})");
             }
         }
 
