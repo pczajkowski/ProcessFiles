@@ -18,11 +18,11 @@ namespace ProcessFilesTests
 
         private readonly List<string> expectedInSubFolderMultipleExtensions = ["test.json"];
 
-        private const string expectedInFolder = "test1.txt";
+        private const string ExpectedInFolder = "test1.txt";
 
         public ProcessFilesTests()
         {
-            expectedInSubFolder.Add(expectedInFolder);
+            expectedInSubFolder.Add(ExpectedInFolder);
             expectedInSubFolderMultipleExtensions.AddRange(expectedInSubFolder);
         }
 
@@ -38,7 +38,7 @@ namespace ProcessFilesTests
             var test = new ProcessFiles.ProcessFiles();
             var errors = test.Process([testFolder], "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(expectedInFolder, result);
+            Assert.Equal(ExpectedInFolder, result);
         }
 
         private static bool CheckResult(List<string> result, List<string> expected)
@@ -97,7 +97,7 @@ namespace ProcessFilesTests
             var test = new ProcessFiles.ProcessFiles();
             var errors = test.Process([testFile], "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(expectedInFolder, result);
+            Assert.Equal(ExpectedInFolder, result);
         }
 
         [Fact]
