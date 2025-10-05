@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace ProcessFilesTests
@@ -9,22 +10,19 @@ namespace ProcessFilesTests
         private readonly string testFolder = "./testFiles";
         private readonly string testFile = "./testFiles/test1.txt";
 
-        private readonly List<string> expectedInSubFolder = new()
-        {
+        private readonly List<string> expectedInSubFolder =
+        [
             "test2.txt",
             "test3.txt"
-        };
+        ];
 
-        private readonly List<string> expectedInSubFolderMultipleExtensions = new()
-        {
-            "test.json"
-        };
+        private readonly List<string> expectedInSubFolderMultipleExtensions = ["test.json"];
 
-        private readonly string expectedInFolder = "test1.txt";
+        private const string ExpectedInFolder = "test1.txt";
 
         public ProcessFilesTests()
         {
-            expectedInSubFolder.Add(expectedInFolder);
+            expectedInSubFolder.Add(ExpectedInFolder);
             expectedInSubFolderMultipleExtensions.AddRange(expectedInSubFolder);
         }
 
@@ -37,9 +35,10 @@ namespace ProcessFilesTests
                 result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", TestAction);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process([testFolder], "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(expectedInFolder, result);
+            Assert.Equal(ExpectedInFolder, result);
         }
 
         private static bool CheckResult(List<string> result, List<string> expected)
@@ -65,7 +64,8 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, "txt", TestAction, true);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process([testFolder], "txt", TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolder));
         }
@@ -79,7 +79,8 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/subFolder", testFile }, "txt", TestAction);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(["./testFiles/subFolder", testFile], "txt", TestAction);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolder));
         }
@@ -93,9 +94,10 @@ namespace ProcessFilesTests
                 result = Path.GetFileName(value);
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "txt", TestAction);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process([testFile], "txt", TestAction);
             Assert.Empty(errors);
-            Assert.Equal(expectedInFolder, result);
+            Assert.Equal(ExpectedInFolder, result);
         }
 
         [Fact]
@@ -107,7 +109,8 @@ namespace ProcessFilesTests
                 result = value;
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { "./testFiles/test.txt" }, "txt", TestAction);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(["./testFiles/test.txt"], "txt", TestAction);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
         }
@@ -121,7 +124,8 @@ namespace ProcessFilesTests
                 result = value;
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFile }, "abc", TestAction);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process([testFile], "abc", TestAction);
             Assert.NotEmpty(errors);
             Assert.Empty(result);
         }
@@ -135,9 +139,40 @@ namespace ProcessFilesTests
                 result.Add(Path.GetFileName(value));
             }
 
-            var errors = ProcessFiles.ProcessFiles.Process(new[] { testFolder }, new[] { "txt", "json" }, TestAction, true);
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process([testFolder], ["txt", "json"], TestAction, true);
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
+        }
+        
+        [Fact]
+        public void ProcessWhenActionInvokesProcessShouldPreserveOuterErrors()
+        {
+            var missingPath = Path.Combine(testFolder, "missing.txt");
+            var nestedMissingPath = Path.Combine(testFolder, "nested-missing.txt");
+
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(
+                [missingPath, testFile],
+                "txt",
+                _ => test.Process([nestedMissingPath], "txt", _ => { })).ToList();
+
+            Assert.True(errors.Exists(x => x.StartsWith($"Problem getting attributes of {missingPath}")));
+            Assert.True(errors.Exists(x => x.StartsWith($"Problem getting attributes of {nestedMissingPath}")));
+        }
+
+        [Fact]
+        public void ProcessDirectoryEnumerationFailureShouldBeReportedAsError()
+        {
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(
+                [testFolder],
+                ["txt["], // invalid search pattern forces Directory.GetFiles to throw
+                _ => { }).ToList();
+
+            Assert.Single(errors);
+            Assert.Contains(testFolder, errors[0]);
+            Assert.Contains("txt[", errors[0]);
         }
     }
 }
