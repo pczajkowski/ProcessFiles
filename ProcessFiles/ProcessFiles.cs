@@ -134,7 +134,7 @@ namespace ProcessFiles
         public List<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             var invalidExtensions = GetInvalidExtensions(fileExtensions);
-            if (invalidExtensions.Count > 0) throw new ArgumentException($"Following extensions contain invalid characters ({invalidCharactersForExtension}):\n{string.Join(Environment.NewLine, invalidExtensions)}");
+            if (invalidExtensions.Count > 0) throw new ArgumentException($"Following extensions contain invalid characters ({string.Join(", ", invalidCharactersForExtension)}):\n{string.Join(Environment.NewLine, invalidExtensions)}");
             
             foreach (var argument in arguments)
             {
