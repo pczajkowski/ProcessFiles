@@ -174,5 +174,21 @@ namespace ProcessFilesTests
             Assert.Contains(testFolder, errors[0]);
             Assert.Contains("txt[", errors[0]);
         }
+        
+        [Fact]
+        public void ProcessFileOnceTest()
+        {
+            var result = new Dictionary<string, int>();
+            void TestAction(string value)
+            {
+                if (result.ContainsKey(value)) result[value]++;
+                else result.Add(value, 1);
+            }
+
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process([testFolder], ["txt", "TxT"], TestAction);
+            Assert.Empty(errors);
+            Assert.Empty(result.Values.Where(x => x > 1).ToList());
+        }
     }
 }

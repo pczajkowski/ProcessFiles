@@ -117,7 +117,7 @@ namespace ProcessFiles
                 return;
             }
 
-            foreach (var file in files)
+            foreach (var file in files.Distinct())
                 ProcessFile(file, fileExtensions, action);
         }
 
