@@ -106,6 +106,7 @@ namespace ProcessFiles
             catch (Exception e)
             {
                 errors.Add($"Problem getting files: {e.Message} ({e.Source})");
+                return;
             }
 
             var files = allFiles
