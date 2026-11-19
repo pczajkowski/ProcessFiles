@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -189,6 +190,13 @@ namespace ProcessFilesTests
             var errors = test.Process([testFolder], ["txt", "TxT"], TestAction);
             Assert.Empty(errors);
             Assert.Empty(result.Values.Where(x => x > 1).ToList());
+        }
+        
+        [Fact]
+        public void ProcessThrowsIfInvalidExtension()
+        {
+            var test = new ProcessFiles.ProcessFiles();
+            Assert.Throws<ArgumentException>(() => test.Process([testFolder], ["t?t", "T*T"], Console.WriteLine));
         }
     }
 }

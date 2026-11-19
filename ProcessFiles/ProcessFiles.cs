@@ -15,6 +15,7 @@ namespace ProcessFiles
     public class ProcessFiles
     {
         private readonly List<string> errors = [];
+        private  readonly  List<char> invalidCharactersForExtension = ['?', '*'];
 
         private Result WhatIsIt(string path)
         {
@@ -120,6 +121,10 @@ namespace ProcessFiles
             foreach (var file in files.Distinct())
                 ProcessFile(file, fileExtensions, action);
         }
+        
+        private bool ValidExtension(string fileExtension) => !invalidCharactersForExtension.Any(fileExtension.Contains);
+        
+        private List<string> GetInvalidExtensions(string [] fileExtensions) => [.. fileExtensions.Where(x => !ValidExtension(x))];
 
         public List<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
@@ -128,6 +133,9 @@ namespace ProcessFiles
 
         public List<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
+            var invalidExtensions = GetInvalidExtensions(fileExtensions);
+            if (invalidExtensions.Count > 0) throw new ArgumentException($"Following extensions contain invalid characters ({invalidCharactersForExtension}):\n{string.Join(Environment.NewLine, invalidExtensions)}");
+            
             foreach (var argument in arguments)
             {
                 switch (WhatIsIt(argument))
