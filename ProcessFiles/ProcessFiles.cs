@@ -39,7 +39,7 @@ namespace ProcessFiles
             return null;
         }
 
-        private bool CheckExtension(string extension, string[] validExtensions)
+        private static bool CheckExtension(string extension, string[] validExtensions)
         {
             return validExtensions.Any(validExtension => extension.Equals(validExtension, StringComparison.OrdinalIgnoreCase));
         }
