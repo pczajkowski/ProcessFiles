@@ -19,7 +19,7 @@ namespace ProcessFiles
 
         private Result WhatIsIt(string path)
         {
-            if (!File.Exists(path))
+            if (!File.Exists(path) && !Directory.Exists(path))
             {
                 errors.Add($"{path} doesn't exist!");
                 return Result.Failure;

@@ -115,6 +115,21 @@ namespace ProcessFilesTests
             Assert.NotEmpty(errors);
             Assert.Empty(result);
         }
+        
+        [Fact]
+        public void ProcessDirectoryNotExistTest()
+        {
+            var result = string.Empty;
+            void TestAction(string value)
+            {
+                result = value;
+            }
+
+            var test = new ProcessFiles.ProcessFiles();
+            var errors = test.Process(["./nonExistent"], "txt", TestAction);
+            Assert.NotEmpty(errors);
+            Assert.Empty(result);
+        }
 
         [Fact]
         public void ProcessFileNotMatchExtensionTest()
@@ -158,8 +173,8 @@ namespace ProcessFilesTests
                 "txt",
                 _ => test.Process([nestedMissingPath], "txt", _ => { })).ToList();
 
-            Assert.True(errors.Exists(x => x.StartsWith($"Problem getting attributes of {missingPath}")));
-            Assert.True(errors.Exists(x => x.StartsWith($"Problem getting attributes of {nestedMissingPath}")));
+            Assert.True(errors.Exists(x => x.Equals($"{missingPath} doesn't exist!")));
+            Assert.True(errors.Exists(x => x.StartsWith($"{nestedMissingPath} doesn't exist!")));
         }
 
         [Fact]
