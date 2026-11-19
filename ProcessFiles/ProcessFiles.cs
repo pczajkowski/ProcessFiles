@@ -19,6 +19,12 @@ namespace ProcessFiles
 
         private Result WhatIsIt(string path)
         {
+            if (!File.Exists(path))
+            {
+                errors.Add($"{path} doesn't exist!");
+                return Result.Failure;
+            }
+            
             try
             {
                 var attr = File.GetAttributes(path);
@@ -47,12 +53,6 @@ namespace ProcessFiles
 
         private bool IsValid(string path, string[] fileExtensions)
         {
-            if (!File.Exists(path))
-            {
-                errors.Add($"{path} doesn't exist!");
-                return false;
-            }
-
             var extension = GetExtension(path);
             if (extension == null)
                 return false;
