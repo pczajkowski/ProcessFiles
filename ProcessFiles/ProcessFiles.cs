@@ -121,12 +121,12 @@ namespace ProcessFiles
                 ProcessFile(file, fileExtensions, action);
         }
 
-        public IEnumerable<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
+        public List<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
             return Process(arguments, [fileExtension], action, recursive);
         }
 
-        public IEnumerable<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
+        public List<string> Process(IEnumerable<string> arguments, string[] fileExtensions, Action<string> action, bool recursive = false)
         {
             foreach (var argument in arguments)
             {
@@ -144,7 +144,7 @@ namespace ProcessFiles
                 }
             }
 
-            return errors;
+            return [.. errors];
         }
     }
 }
