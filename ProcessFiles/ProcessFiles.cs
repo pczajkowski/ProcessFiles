@@ -98,27 +98,27 @@ namespace ProcessFiles
                 true => SearchOption.AllDirectories,
             };
 
-            List<string> files = [];
-            foreach (var extension in fileExtensions)
+            string[] allFiles = [];
+            try
             {
-                try
-                {
-                    var filesWithExtension = Directory.GetFiles(path, $"*.{extension}", searchOption);
-                    files.AddRange(filesWithExtension);
-                }
-                catch (Exception e)
-                {
-                    errors.Add($"Problem getting files: {e.Message} ({e.Source})");
-                }
+                allFiles = Directory.GetFiles(path, "*", searchOption);
+            }
+            catch (Exception e)
+            {
+                errors.Add($"Problem getting files: {e.Message} ({e.Source})");
             }
 
+            var files = allFiles
+                .Where(file => CheckExtension(Path.GetExtension(file).TrimStart('.'), fileExtensions))
+                .Distinct()
+                .ToList();
             if (files.Count == 0)
             {
                 errors.Add($"There are no files in {path} with given extensions ({string.Join(", ", fileExtensions)})!");
                 return;
             }
 
-            foreach (var file in files.Distinct())
+            foreach (var file in files)
                 ProcessFile(file, fileExtensions, action);
         }
         
