@@ -189,7 +189,7 @@ namespace ProcessFilesTests
         }
         
         [Fact]
-        public void ProcessErrorsDontAccumulate()
+        public void ProcessErrorsFromSameInstanceAccumulate()
         {
             var result = string.Empty;
             void TestAction(string value)
@@ -200,6 +200,25 @@ namespace ProcessFilesTests
             var test = new ProcessFiles.ProcessFiles();
             var errors1 = test.Process(["./testFiles/test.txt"], "txt", TestAction);
             var errors2 = test.Process(["./nonExistent"], "txt", TestAction);
+            Assert.NotEmpty(errors1);
+            Assert.NotEmpty(errors2);
+            Assert.Contains(errors1, x => errors2.Contains(x));
+        }
+        
+        [Fact]
+        public void ProcessErrorsFromDifferemtInstancesDontAccumulate()
+        {
+            var result = string.Empty;
+            void TestAction(string value)
+            {
+                result = value;
+            }
+
+            var test = new ProcessFiles.ProcessFiles();
+            var errors1 = test.Process(["./testFiles/test.txt"], "txt", TestAction);
+            
+            var test2 = new ProcessFiles.ProcessFiles();
+            var errors2 = test2.Process(["./nonExistent"], "txt", TestAction);
             Assert.NotEmpty(errors1);
             Assert.NotEmpty(errors2);
             Assert.DoesNotContain(errors1, x => errors2.Contains(x));

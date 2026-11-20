@@ -14,7 +14,7 @@ namespace ProcessFiles
 
     public class ProcessFiles
     {
-        private List<string> errors = [];
+        private readonly List<string> errors = [];
         
         private static readonly char[] invalidCharactersForExtension =
             [.. ExtraChars(), .. Enumerable.Range(0x00, 0x20).Select(i => (char)i)];
@@ -143,8 +143,6 @@ namespace ProcessFiles
         {
             var invalidExtensions = GetInvalidExtensions(fileExtensions);
             if (invalidExtensions.Count > 0) throw new ArgumentException($"Following extensions contain invalid characters ({string.Join(", ", invalidCharactersForExtension)}):\n{string.Join(Environment.NewLine, invalidExtensions)}");
-            
-            errors = [];
             
             foreach (var argument in arguments)
             {
