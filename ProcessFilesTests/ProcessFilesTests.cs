@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ProcessFiles;
 using Xunit;
 
 namespace ProcessFilesTests
