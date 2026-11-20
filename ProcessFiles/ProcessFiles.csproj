@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Nullable>enable</Nullable>
 		<TargetFramework>net10.0</TargetFramework>
-		<Version>1.1.0</Version>
+		<Version>2.0.0</Version>
 		<Title>ProcessFiles</Title>
 		<Authors>Piotr Czajkowski</Authors>
 		<Description>Easily process files from command line arguments</Description>
@@ -13,7 +13,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<RepositoryType>GitHub</RepositoryType>
-		<PackageReleaseNotes>Using .NET 10</PackageReleaseNotes>
+		<PackageReleaseNotes>Using .NET 10. Process re-entrant and returns List.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

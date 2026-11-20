@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ProcessFiles;
 using Xunit;
 
 namespace ProcessFilesTests
@@ -195,7 +196,11 @@ namespace ProcessFilesTests
         public void ProcessThrowsIfInvalidExtension()
         {
             var test = new ProcessFiles.ProcessFiles();
-            Assert.Throws<ArgumentException>(() => test.Process([testFolder], ["t?t", "T*T"], Console.WriteLine));
+            
+            foreach (var character in ProcessFiles.ProcessFiles.InvalidCharactersForExtension)
+            {
+                Assert.Throws<ArgumentException>(() => test.Process([testFolder], $"test{character}test", Console.WriteLine));
+            }
         }
     }
 }

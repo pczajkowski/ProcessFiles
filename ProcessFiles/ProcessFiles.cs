@@ -15,8 +15,10 @@ namespace ProcessFiles
     public class ProcessFiles
     {
         private List<string> errors = [];
-        private readonly List<char> invalidCharactersForExtension = ['?', '*'];
-
+        
+        private static readonly char[] invalidCharactersForExtension = ['"', '<', '>', ':', '|', '?', '*'];
+        public static char[] InvalidCharactersForExtension => [.. invalidCharactersForExtension];
+        
         private Result WhatIsIt(string path)
         {
             if (!File.Exists(path) && !Directory.Exists(path))
