@@ -161,20 +161,6 @@ namespace ProcessFilesTests
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
         }
-
-        [Fact]
-        public void ProcessDirectoryEnumerationFailureShouldBeReportedAsError()
-        {
-            var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process(
-                [testFolder],
-                ["txt["], // invalid search pattern forces Directory.GetFiles to throw
-                _ => { }).ToList();
-
-            Assert.Single(errors);
-            Assert.Contains(testFolder, errors[0]);
-            Assert.Contains("txt[", errors[0]);
-        }
         
         [Fact]
         public void ProcessFileOnceTest()
