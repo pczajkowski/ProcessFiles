@@ -188,5 +188,22 @@ namespace ProcessFilesTests
                 Assert.Throws<ArgumentException>(() => test.Process([testFolder], $"test{character}test", Console.WriteLine));
             }
         }
+        
+        [Fact]
+        public void ProcessErrorsDontAccumulate()
+        {
+            var result = string.Empty;
+            void TestAction(string value)
+            {
+                result = value;
+            }
+
+            var test = new ProcessFiles.ProcessFiles();
+            var errors1 = test.Process(["./testFiles/test.txt"], "txt", TestAction);
+            var errors2 = test.Process(["./nonExistent"], "txt", TestAction);
+            Assert.NotEmpty(errors1);
+            Assert.NotEmpty(errors2);
+            Assert.DoesNotContain(errors1, x => errors2.Contains(x));
+        }
     }
 }
