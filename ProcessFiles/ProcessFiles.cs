@@ -16,7 +16,12 @@ namespace ProcessFiles
     {
         private List<string> errors = [];
         
-        private static readonly char[] invalidCharactersForExtension = ['"', '<', '>', ':', '|', '?', '*'];
+        private static readonly char[] invalidCharactersForExtension =
+            [.. ExtraChars(), .. Enumerable.Range(0x00, 0x20).Select(i => (char)i)];
+
+        private static IEnumerable<char> ExtraChars() => ['"', '<', '>', ':', '|', '?', '*',
+            '\\', '/'];
+        
         public static char[] InvalidCharactersForExtension => [.. invalidCharactersForExtension];
         
         private Result WhatIsIt(string path)
