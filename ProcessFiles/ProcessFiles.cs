@@ -130,9 +130,9 @@ namespace ProcessFiles
                 ProcessFile(file, fileExtensions, action);
         }
         
-        private bool ValidExtension(string fileExtension) => !invalidCharactersForExtension.Any(fileExtension.Contains);
+        private static bool ValidExtension(string fileExtension) => !invalidCharactersForExtension.Any(fileExtension.Contains);
         
-        private List<string> GetInvalidExtensions(string [] fileExtensions) => [.. fileExtensions.Where(x => !ValidExtension(x))];
+        private static List<string> GetInvalidExtensions(string [] fileExtensions) => [.. fileExtensions.Where(x => !ValidExtension(x))];
 
         public List<string> Process(IEnumerable<string> arguments, string fileExtension, Action<string> action, bool recursive = false)
         {
