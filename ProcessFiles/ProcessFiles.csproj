@@ -13,7 +13,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<RepositoryType>GitHub</RepositoryType>
-		<PackageReleaseNotes>Using .NET 10. Process re-entrant and returns List.</PackageReleaseNotes>
+		<PackageReleaseNotes>Using .NET 10. Process returns List.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
