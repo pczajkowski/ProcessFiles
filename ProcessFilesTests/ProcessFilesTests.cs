@@ -206,7 +206,7 @@ namespace ProcessFilesTests
         }
         
         [Fact]
-        public void ProcessErrorsFromDifferemtInstancesDontAccumulate()
+        public void ProcessErrorsFromDifferentInstancesDontAccumulate()
         {
             var result = string.Empty;
             void TestAction(string value)
