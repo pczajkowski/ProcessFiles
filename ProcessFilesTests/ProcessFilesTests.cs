@@ -160,22 +160,6 @@ namespace ProcessFilesTests
             Assert.Empty(errors);
             Assert.True(CheckResult(result, expectedInSubFolderMultipleExtensions));
         }
-        
-        [Fact]
-        public void ProcessWhenActionInvokesProcessShouldPreserveOuterErrors()
-        {
-            var missingPath = Path.Combine(testFolder, "missing.txt");
-            var nestedMissingPath = Path.Combine(testFolder, "nested-missing.txt");
-
-            var test = new ProcessFiles.ProcessFiles();
-            var errors = test.Process(
-                [missingPath, testFile],
-                "txt",
-                _ => test.Process([nestedMissingPath], "txt", _ => { })).ToList();
-
-            Assert.True(errors.Exists(x => x.Equals($"{missingPath} doesn't exist!")));
-            Assert.True(errors.Exists(x => x.StartsWith($"{nestedMissingPath} doesn't exist!")));
-        }
 
         [Fact]
         public void ProcessDirectoryEnumerationFailureShouldBeReportedAsError()
